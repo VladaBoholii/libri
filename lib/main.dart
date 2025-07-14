@@ -1,6 +1,11 @@
-import 'package:flutter/material.dart';
+import 'dart:typed_data';
 
-void main() {
+import 'package:flutter/material.dart';
+import 'package:flutter_rating/flutter_rating.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
+
+void main() async {
   runApp(const MyApp());
 }
 
@@ -26,6 +31,25 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int currentPageIndex = 0;
   bool holi = false;
+  Uint8List? img;
+
+  Future<Uint8List?> pickImage(ImageSource source) async {
+    final ImagePicker _imagePicker = ImagePicker();
+
+    // Request permissions if necessary
+    if (source == ImageSource.camera) {
+      await Permission.camera.request();
+    } else {
+      await Permission.photos
+          .request(); // or Permission.storage on older Androids
+    }
+
+    final XFile? file = await _imagePicker.pickImage(source: source);
+    if (file != null) {
+      return await file.readAsBytes();
+    }
+    return null;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,6 +90,147 @@ class _MyHomePageState extends State<MyHomePage> {
                   label: 'WISHES',
                 ),
               ],
+            )
+          : SizedBox(),
+      floatingActionButton: holi && currentPageIndex == 0
+          ? FloatingActionButton(
+              onPressed: () {
+                showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  builder: (context) {
+                    return StatefulBuilder(
+                      builder: (context, setState) {
+                        // <-- local setState here!
+                        return Padding(
+                          padding: EdgeInsets.only(
+                            bottom: MediaQuery.of(context).viewInsets.bottom,
+                            left: 16,
+                            right: 16,
+                            top: 24,
+                          ),
+                          child: Form(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text('Book name:'),
+                                TextField(),
+                                Text('Author'),
+                                TextField(),
+                                Text('Overview'),
+                                TextField(
+                                  minLines: 1,
+                                  maxLines: 3,
+                                  keyboardType: TextInputType.multiline,
+                                ),
+                                Text('Price'),
+                                TextField(keyboardType: TextInputType.number),
+                                img != null
+                                    ? Stack(
+                                        children: [
+                                          Image.memory(
+                                            img!,
+                                            width: 200,
+                                            height: 200,
+                                            fit: BoxFit.cover,
+                                          ),
+                                          Container(
+                                            width: 200,
+                                            height: 200,
+                                            color: Color.fromARGB(
+                                              112,
+                                              31,
+                                              31,
+                                              31,
+                                            ),
+                                          ),
+                                          Positioned(
+                                            left: 50,
+                                            top: 50,
+                                            child: IconButton(
+                                              onPressed: () {
+                                                setState(() {
+                                                  // <-- use this setState
+                                                  img = null;
+                                                });
+                                              },
+                                              icon: Icon(
+                                                Icons.change_circle_outlined,
+                                                size: 100,
+                                                color: Color.fromARGB(
+                                                  225,
+                                                  255,
+                                                  255,
+                                                  255,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      )
+                                    : Row(
+                                        spacing: 20,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          IconButton(
+                                            onPressed: () async {
+                                              final bytes = await pickImage(
+                                                ImageSource.camera,
+                                              );
+                                              setState(() {
+                                                img = bytes;
+                                              });
+                                            },
+                                            style: ButtonStyle(
+                                              backgroundColor:
+                                                  WidgetStateProperty.all(
+                                                    Colors.blue,
+                                                  ),
+                                            ),
+                                            icon: Icon(
+                                              Icons.camera_alt,
+                                              size: 40,
+                                            ),
+                                            color: Colors.white,
+                                          ),
+                                          IconButton(
+                                            onPressed: () async {
+                                              final bytes = await pickImage(
+                                                ImageSource.gallery,
+                                              );
+                                              setState(() {
+                                                img = bytes;
+                                              });
+                                            },
+                                            style: ButtonStyle(
+                                              backgroundColor:
+                                                  WidgetStateProperty.all(
+                                                    Colors.blue,
+                                                  ),
+                                            ),
+                                            icon: Icon(
+                                              Icons.drive_folder_upload_rounded,
+                                              size: 40,
+                                            ),
+                                            color: Colors.white,
+                                          ),
+                                        ],
+                                      ),
+                                OutlinedButton(
+                                  onPressed: () {},
+                                  child: Text('Add new book to library'),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                );
+              },
+              child: Icon(Icons.add),
             )
           : SizedBox(),
       body: holi
