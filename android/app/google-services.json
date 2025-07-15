@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "665095074853",
+    "project_id": "libri-bf04d",
+    "storage_bucket": "libri-bf04d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:665095074853:android:ae719419ca41ff1a9abbcc",
+        "android_client_info": {
+          "package_name": "com.example.libri"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAG1lWpfVUqlSnjMjiHvNq7IG9iAVdECpQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
