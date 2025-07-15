@@ -40,6 +40,8 @@ dependencies:
   flutter_rating: ^2.0.2
   image_field: ^0.0.12
   image_picker: ^1.1.2
+  http: ^1.4.0
+  flutter_dotenv: ^5.2.1
 
 dev_dependencies:
   flutter_test:
@@ -63,7 +65,8 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
+  assets:
+    - .env
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 

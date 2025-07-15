@@ -1,11 +1,17 @@
 import 'dart:typed_data';
 
+import 'package:cloudinary_url_gen/cloudinary.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_rating/flutter_rating.dart';
+import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
+import 'package:libri/backend/cloudinary.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load();
   runApp(const MyApp());
 }
 
@@ -101,7 +107,6 @@ class _MyHomePageState extends State<MyHomePage> {
                   builder: (context) {
                     return StatefulBuilder(
                       builder: (context, setState) {
-                        // <-- local setState here!
                         return Padding(
                           padding: EdgeInsets.only(
                             bottom: MediaQuery.of(context).viewInsets.bottom,
@@ -218,7 +223,22 @@ class _MyHomePageState extends State<MyHomePage> {
                                         ],
                                       ),
                                 OutlinedButton(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    if (img != null) {
+                                      uploadToCloud(img!, 'try');
+                                    } else {
+                                      // Optional: show warning if no image
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                            "Please pick an image first",
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                  },
                                   child: Text('Add new book to library'),
                                 ),
                               ],
